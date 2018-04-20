@@ -1,0 +1,40 @@
+
+<head>
+
+    <title>Web Scanner</title>
+</head>
+
+<body>
+
+% if running == False:
+<fieldset >
+    <legend>Scanner Control</legend>
+
+    <form method=post action=index>
+        <table>
+            <Tr>
+                <td>Resolution</td><td><input type=text name=res value=150></td>
+            </Tr>
+        </table>
+        
+        
+        <input type=hidden name='doscan' value="Y">
+        <input type=submit value=RunScan>
+        </form>
+</fieldset>
+% endif
+
+
+
+
+<fieldset >
+    <legend>Scanner Output</legend>
+
+% for a in odir:
+
+<a href="output?sid=${a}">${a}</a><br>
+
+% endfor
+</fieldset>
+
+</body>
