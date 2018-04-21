@@ -14,6 +14,10 @@ from mako.template import Template
 from os import listdir
 from os.path import isfile, join, isdir
 import zipfile
+import sane
+from PIL import Image
+from fpdf import FPDF
+
 
 
 #simple global variable to tell the interface if the scanner is running or not
@@ -27,8 +31,7 @@ root = "/home/pi/scans"
 mushuroot = "/home/pi/merp"
 
 
-from PIL import Image
-from fpdf import FPDF
+
 
 # I dont' want to block the cherrypy instance from doing its job while we do a scan job
 # Its a bit overkill, but I setup a queue and a seperate thread just for running the scans
@@ -82,9 +85,23 @@ def doscan(letime, res):
     os.mkdir(letime)
     os.chdir(letime)
 
-    batch = letime+"-%04d.jpg"
+    #batch = letime+"-%04d.jpg"
     #first capture scans from scanner
-    os.system('scanimage --source="ADF Duplex" -d fujitsu:fi-5750Cdj:100509 --format=jpeg --mode=color --batch="%s" --resolution=%s ' % (batch, res))
+    #os.system('scanimage --source="ADF Duplex" -d fujitsu:fi-5750Cdj:100509 --format=jpeg --mode=color --batch="%s" --resolution=%s ' % (batch, res))
+    ver = sane.init()
+    print(ver)
+    dev = sane.open("fujitsu:fi-5750Cdj:100509")
+    dev.source = "ADF Duplex"
+    dev.mode = "color"
+    dev.resolution = res
+    cnt = 1
+    for i in dev.multi_scan():
+        print(i)
+        i.save(letime+"%04d.jpg" % cnt)
+        cnt=cnt+1
+    dev.close()
+    
+    
     print('Capture Complete')
     
     lepath = "."
